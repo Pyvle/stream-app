@@ -1,0 +1,12 @@
+D:/vs/stream-app/build/CMakeFiles/server.dir
+D:/vs/stream-app/build/CMakeFiles/client.dir
+D:/vs/stream-app/build/CMakeFiles/INSTALL.dir
+D:/vs/stream-app/build/CMakeFiles/ALL_BUILD.dir
+D:/vs/stream-app/build/CMakeFiles/ZERO_CHECK.dir
+D:/vs/stream-app/build/lib/glfw/CMakeFiles/uninstall.dir
+D:/vs/stream-app/build/lib/glfw/CMakeFiles/INSTALL.dir
+D:/vs/stream-app/build/lib/glfw/CMakeFiles/ALL_BUILD.dir
+D:/vs/stream-app/build/lib/glfw/src/CMakeFiles/glfw.dir
+D:/vs/stream-app/build/lib/glfw/src/CMakeFiles/update_mappings.dir
+D:/vs/stream-app/build/lib/glfw/src/CMakeFiles/INSTALL.dir
+D:/vs/stream-app/build/lib/glfw/docs/CMakeFiles/INSTALL.dir

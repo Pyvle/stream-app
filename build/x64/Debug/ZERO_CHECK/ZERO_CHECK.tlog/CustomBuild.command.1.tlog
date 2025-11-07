@@ -1,0 +1,10 @@
+^D:\VS\STREAM-APP\BUILD\CMAKEFILES\1901F0FF40864DE1DB5CF5812B633017\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/vs/stream-app -BD:/vs/stream-app/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file D:/vs/stream-app/build/stream-app.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

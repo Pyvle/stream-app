@@ -1,0 +1,10 @@
+{
+	"InstallScripts" : 
+	[
+		"D:/vs/stream-app/build/cmake_install.cmake",
+		"D:/vs/stream-app/build/lib/glfw/cmake_install.cmake",
+		"D:/vs/stream-app/build/lib/glfw/src/cmake_install.cmake",
+		"D:/vs/stream-app/build/lib/glfw/docs/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
