@@ -1,81 +1,71 @@
 cmake_minimum_required(VERSION 3.14)
 
-set(CMAKE_TOOLCHAIN_FILE "C:/Users/geenb/Documents/vcpkg/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+project(stream-app LANGUAGES C CXX)
 
-project(stream-app C CXX)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(lib/glfw)
 
-add_definitions(-DGL_SILENCE_DEPRESENTATION)
+add_compile_definitions(GL_SILENCE_DEPRECATION)
 
-include_directories(lib/ffmpeg/include)
-link_directories(lib/ffmpeg/lib)
+set(FFMPEG_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/lib/ffmpeg")
+set(FFMPEG_LIBS
+	avcodec
+	avformat
+	avutil
+	avfilter
+	avdevice
+	swscale
+	swresample
+)
 
-find_package(nlohmann_json 3.12.0 REQUIRED)
-
-find_package(LibDataChannel CONFIG REQUIRED)
-
-find_package(Boost REQUIRED COMPONENTS Asio)
-
-if(APPLE) 
-	list(APPEND EXTRA_LIBS
+if(APPLE)
+	list(APPEND PLATFORM_LIBS
 		"-framework OpenGL"
 	)
 elseif(WIN32)
-	list(APPEND EXTRA_LIBS
+	list(APPEND PLATFORM_LIBS
 		opengl32
 		glu32
 	)
 else()
-	list(APPEND EXTRA_LIBS
-		GL 
-		GLU 
+	list(APPEND PLATFORM_LIBS
+		GL
+		GLU
 		X11
 	)
 endif()
 
-list(APPEND SOURSES_SERVER
+set(SOURCES_SERVER
 	src/server.cpp
 )
 
-list(APPEND SOURSES_CLIENT
+set(SOURCES_CLIENT
 	src/client.cpp
 	src/video_reader.hpp
 	src/video_reader.cpp
 )
 
-add_executable(server ${SOURSES_SERVER})
-target_link_libraries(server 
-	glfw 
-	${EXTRA_LIBS}
-	avcodec
-	avformat
-	avutil
-	avfilter
-	avdevice
-	swscale
-	swresample
-	Boost::asio
+add_executable(server ${SOURCES_SERVER})
+add_executable(client ${SOURCES_CLIENT})
 
-	LibDataChannel::LibDataChannel
-	nlohmann_json::nlohmann_json
-)
-
-add_executable(client ${SOURSES_CLIENT})
-target_link_libraries(client 
-	glfw 
-	${EXTRA_LIBS}
-	avcodec
-	avformat
-	avutil
-	avfilter
-	avdevice
-	swscale
-	swresample
-	Boost::asio
-
-	LibDataChannel::LibDataChannel
-	nlohmann_json::nlohmann_json
-)
-
+foreach(target_name IN ITEMS server client)
+	target_include_directories(${target_name} PRIVATE
+		"${FFMPEG_ROOT}/include"
+	)
+	target_link_directories(${target_name} PRIVATE
+		"${FFMPEG_ROOT}/lib"
+	)
+	target_link_libraries(${target_name} PRIVATE
+		glfw
+		${PLATFORM_LIBS}
+		${FFMPEG_LIBS}
+	)
+endforeach()

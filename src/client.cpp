@@ -4,18 +4,47 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <string>
+
+static std::string get_stream_url(int argc, char* argv[]) {
+	std::string stream_url = "udp://127.0.0.1:9000?fifo_size=5000000";
+
+	for (int i = 1; i < argc; ++i) {
+		std::string arg = argv[i];
+		if ((arg == "--url" || arg == "-u") && i + 1 < argc) {
+			stream_url = argv[++i];
+		}
+		else if (arg.rfind("--url=", 0) == 0) {
+			stream_url = arg.substr(6);
+		}
+		else if (arg == "--help" || arg == "-h") {
+			printf("Usage: client [--url udp://127.0.0.1:9000?fifo_size=5000000]\n");
+			return "";
+		}
+		else {
+			stream_url = arg;
+		}
+	}
+
+	return stream_url;
+}
 
 int main(int argc, char* argv[]) {
 	GLFWwindow* window;
+	std::string stream_url = get_stream_url(argc, argv);
+	if (stream_url.empty()) {
+		return 0;
+	}
 
 	if (!glfwInit()) {
 		printf("Couldn't init GLFW\n");
 		return 1;
 	}
 
-	VideoReaderState vr_state;
-	if (!video_reader_open(&vr_state, "udp://127.0.0.1:9000?fifo_size=5000000")) {
+	VideoReaderState vr_state{};
+	if (!video_reader_open(&vr_state, stream_url.c_str())) {
 		printf("Couldn't open video file\n");
+		glfwTerminate();
 		return 1;
 	}
 
@@ -28,6 +57,8 @@ int main(int argc, char* argv[]) {
 	window = glfwCreateWindow(window_width, window_height, "Stream", NULL, NULL);
 	if (!window) {
 		printf("Couldn't open window\n");
+		video_reader_close(&vr_state);
+		glfwTerminate();
 		return 1;
 	}
 
@@ -59,13 +90,13 @@ int main(int argc, char* argv[]) {
 		int64_t pts;
 		if (!video_reader_read(&vr_state, data, &pts)) {
 			printf("Couldn't load video frame\n");
+			glfwPollEvents();
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 			continue;
 		}
 
-		if (frame_width == 0 || frame_height == 0) {
-			frame_width = vr_state.width;
-			frame_height = vr_state.height;
-		}
+		frame_width = vr_state.width;
+		frame_height = vr_state.height;
 
 		glBindTexture(GL_TEXTURE_2D, tex_handle);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, frame_width, frame_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -87,7 +118,7 @@ int main(int argc, char* argv[]) {
 		int offset_x = (window_width - draw_width) / 2;
 		int offset_y = (window_height - draw_height) / 2;
 
-		//рендер текстуры
+		// Render texture
 		glEnable(GL_TEXTURE_2D);
 		glBegin(GL_QUADS);
 		glTexCoord2d(0, 0); glVertex2i(offset_x, offset_y);
@@ -103,8 +134,11 @@ int main(int argc, char* argv[]) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(33));
 	}
 
-	delete[] data;
+	glDeleteTextures(1, &tex_handle);
+	glfwDestroyWindow(window);
+	glfwTerminate();
 	video_reader_close(&vr_state);
+	delete[] data;
 
 	return 0;
 }

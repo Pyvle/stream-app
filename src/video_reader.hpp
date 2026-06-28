@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <thread>
 #include <chrono>
 
@@ -13,15 +14,16 @@ extern "C" {
 }
 
 struct VideoReaderState {
-	int width, height;
-	AVRational time_base;
+	int width = 0;
+	int height = 0;
+	AVRational time_base = { 0, 1 };
 
-	int stream_index;
-	AVFormatContext* av_format_ctx;
-	AVCodecContext* av_codec_ctx;
-	AVFrame* av_frame;
-	AVPacket* av_packet;
-	SwsContext* sws_scaler_ctx;
+	int stream_index = -1;
+	AVFormatContext* av_format_ctx = nullptr;
+	AVCodecContext* av_codec_ctx = nullptr;
+	AVFrame* av_frame = nullptr;
+	AVPacket* av_packet = nullptr;
+	SwsContext* sws_scaler_ctx = nullptr;
 };
 
 bool video_reader_open(VideoReaderState* state, const char* filename);

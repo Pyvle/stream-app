@@ -1,0 +1,35 @@
+# CMake and build output
+build/
+build-*/
+out/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+
+# Visual Studio
+.vs/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.ilk
+*.pdb
+*.recipe
+*.tlog
+*.lastbuildstate
+
+# Binaries copied by local builds
+*.exe
+*.dll
+*.dylib
+*.so
+
+# Local editor and OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
